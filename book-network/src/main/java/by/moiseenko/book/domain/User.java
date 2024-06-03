@@ -72,7 +72,7 @@ public class User implements UserDetails, Principal {
         return this.roles
                 .stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toList()); 
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -105,7 +105,7 @@ public class User implements UserDetails, Principal {
         return enabled;
     }
 
-    private String getFullName() {
+    public String getFullName() {
         return firstname + " " + lastname;
     }
 }

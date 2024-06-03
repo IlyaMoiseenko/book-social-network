@@ -2,27 +2,24 @@ services:
   postgres:
     container_name: postgres-sql-bsn
     image: postgres
-    restart: unless-stopped
     environment:
-      POSTGRES_USERNAME: admin
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB_NAME: book_social_network
-      POSTGRES_DATA: /var/lib/postgresql/data
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      PGDATA: /var/lib/postgresql/data
+      POSTGRES_DB: book_social_network
     volumes:
-      - postgres: /data/postgres
+      - postgres:/data/postgres
     ports:
-      - 5432:5432
+      - 5444:5432
     networks:
       - spring-demo
+    restart: unless-stopped
   mail-dev:
     container_name: mail-dev-bsn
     image: maildev/maildev
     ports:
       - 1080:1080
       - 1025:1025
-    networks:
-      - spring-demo
-
 networks:
   spring-demo:
     driver: bridge
