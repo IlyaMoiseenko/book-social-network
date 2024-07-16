@@ -1,6 +1,8 @@
 package by.moiseenko.book.controller;
 
+import by.moiseenko.book.dto.request.AuthenticationRequest;
 import by.moiseenko.book.dto.request.RegistrationRequest;
+import by.moiseenko.book.dto.response.AuthenticationResponse;
 import by.moiseenko.book.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
@@ -26,5 +28,10 @@ public class AuthenticationController {
         authenticationService.register(request);
 
         return ResponseEntity.accepted().build();
+    }
+
+    @PostMapping("/authenticate")
+    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody @Valid AuthenticationRequest request) {
+        return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 }
