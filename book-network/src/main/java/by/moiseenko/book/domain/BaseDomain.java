@@ -40,6 +40,6 @@ public class BaseDomain {
     private Long createdBy;
 
     @LastModifiedBy
-    @Column(name = "last_modified_at", insertable = false)
+    @Column(name = "last_modified_at", insertable = false, updatable = false)
     private Long lastModifiedBy;
 }
