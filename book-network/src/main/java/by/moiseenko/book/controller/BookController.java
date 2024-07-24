@@ -1,6 +1,7 @@
 package by.moiseenko.book.controller;
 
 import by.moiseenko.book.domain.Book;
+import by.moiseenko.book.domain.User;
 import by.moiseenko.book.dto.request.BookRequest;
 import by.moiseenko.book.dto.response.BookResponse;
 import by.moiseenko.book.mapper.BookMapper;
@@ -22,8 +23,11 @@ public class BookController {
     private final BookMapper bookMapper;
 
     @PostMapping
-    public ResponseEntity<Long> saveBook(@RequestBody @Valid BookRequest request, Authentication connectedUser) {
-        return ResponseEntity.ok(bookService.save(request, connectedUser));
+    public ResponseEntity<Long> saveBook(@RequestBody @Valid BookRequest request, Authentication authentication) {
+        Book book = bookMapper.toBook(request);
+        User connectedUser = (User) authentication.getPrincipal();
+
+        return ResponseEntity.ok(bookService.save(book, connectedUser));
     }
 
     @GetMapping("/{book-id}")
