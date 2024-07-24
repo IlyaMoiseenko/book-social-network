@@ -5,6 +5,7 @@ import by.moiseenko.book.domain.User;
 import by.moiseenko.book.dto.request.BookRequest;
 import by.moiseenko.book.mapper.BookMapper;
 import by.moiseenko.book.repository.BookRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -22,5 +23,10 @@ public class BookService {
         book.setOwner(user);
 
         return bookRepository.save(book).getId();
+    }
+
+    public Book findById(Long id) {
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No book found with id: " + id));
     }
 }
