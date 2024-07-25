@@ -1,8 +1,10 @@
 package by.moiseenko.book.mapper;
 
 import by.moiseenko.book.domain.Book;
+import by.moiseenko.book.domain.BookTransactionHistory;
 import by.moiseenko.book.dto.request.BookRequest;
 import by.moiseenko.book.dto.response.BookResponse;
+import by.moiseenko.book.dto.response.BorrowedBookResponse;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -32,6 +34,19 @@ public class BookMapper {
                 .rate(from.getRate())
                 .archived(from.isArchive())
                 .shareable(from.isSharable())
+                .build();
+    }
+
+    public BorrowedBookResponse toBorrowedBookResponse(BookTransactionHistory from) {
+        return BorrowedBookResponse
+                .builder()
+                .id(from.getId())
+                .title(from.getBook().getTitle())
+                .authorName(from.getBook().getAuthorName())
+                .isbn(from.getBook().getIsbn())
+                .rate(from.getBook().getRate())
+                .returned(from.isReturned())
+                .returnApproved(from.isReturnedApproved())
                 .build();
     }
 }

@@ -1,9 +1,11 @@
 package by.moiseenko.book.controller;
 
 import by.moiseenko.book.domain.Book;
+import by.moiseenko.book.domain.BookTransactionHistory;
 import by.moiseenko.book.domain.User;
 import by.moiseenko.book.dto.request.BookRequest;
 import by.moiseenko.book.dto.response.BookResponse;
+import by.moiseenko.book.dto.response.BorrowedBookResponse;
 import by.moiseenko.book.dto.response.PageResponse;
 import by.moiseenko.book.mapper.BookMapper;
 import by.moiseenko.book.service.BookService;
@@ -78,6 +80,31 @@ public class BookController {
         Page<Book> books = bookService.findAllByOwner(page, size, user);
         List<BookResponse> listOfBookResponse = books.stream()
                 .map(bookMapper::toBookResponse)
+                .toList();
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        listOfBookResponse,
+                        books.getNumber(),
+                        books.getSize(),
+                        books.getTotalElements(),
+                        books.getTotalPages(),
+                        books.isFirst(),
+                        books.isLast()
+                )
+        );
+    }
+
+    @GetMapping("/borrowed")
+    public ResponseEntity<PageResponse<BorrowedBookResponse>> getAllBorrowedBooks(
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10") int size,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        Page<BookTransactionHistory> books = bookService.findAllBorrowedBooks(page, size, user);
+        List<BorrowedBookResponse> listOfBookResponse = books.stream()
+                .map(bookMapper::toBorrowedBookResponse)
                 .toList();
 
         return ResponseEntity.ok(

@@ -1,10 +1,13 @@
 package by.moiseenko.book.service;
 
 import by.moiseenko.book.domain.Book;
+import by.moiseenko.book.domain.BookTransactionHistory;
 import by.moiseenko.book.domain.User;
 import by.moiseenko.book.mapper.BookMapper;
 import by.moiseenko.book.repository.BookRepository;
+import by.moiseenko.book.repository.BookTransactionHistoryRepository;
 import by.moiseenko.book.specification.BookSpecification;
+import by.moiseenko.book.specification.BookTransactionHistorySpecification;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +20,7 @@ public class BookService {
 
     private final BookMapper mapper;
     private final BookRepository bookRepository;
+    private final BookTransactionHistoryRepository bookTransactionHistoryRepository;
 
     public Long save(Book book, User user) {
         book.setOwner(user);
@@ -39,6 +43,13 @@ public class BookService {
     public Page<Book> findAllByOwner(int page, int size, User user) {
         return bookRepository.findAll(
                 BookSpecification.withOwnerId(user.getId()),
+                PageRequest.of(page, size)
+        );
+    }
+
+    public Page<BookTransactionHistory> findAllBorrowedBooks(int page, int size, User user) {
+        return bookTransactionHistoryRepository.findAll(
+                BookTransactionHistorySpecification.withUserId(user.getId()),
                 PageRequest.of(page, size)
         );
     }
