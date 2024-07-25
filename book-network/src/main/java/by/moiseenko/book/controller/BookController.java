@@ -119,4 +119,29 @@ public class BookController {
                 )
         );
     }
+
+    @GetMapping("/returned")
+    public ResponseEntity<PageResponse<BorrowedBookResponse>> getAllReturnedBooks(
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10") int size,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        Page<BookTransactionHistory> books = bookService.findAllReturnedBooks(page, size, user);
+        List<BorrowedBookResponse> listOfBookResponse = books.stream()
+                .map(bookMapper::toBorrowedBookResponse)
+                .toList();
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        listOfBookResponse,
+                        books.getNumber(),
+                        books.getSize(),
+                        books.getTotalElements(),
+                        books.getTotalPages(),
+                        books.isFirst(),
+                        books.isLast()
+                )
+        );
+    }
 }

@@ -12,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -50,6 +51,18 @@ public class BookService {
     public Page<BookTransactionHistory> findAllBorrowedBooks(int page, int size, User user) {
         return bookTransactionHistoryRepository.findAll(
                 BookTransactionHistorySpecification.withUserId(user.getId()),
+                PageRequest.of(page, size)
+        );
+    }
+
+    public Page<BookTransactionHistory> findAllReturnedBooks(int page, int size, User user) {
+        Specification<BookTransactionHistory> specification = Specification.where(
+                BookTransactionHistorySpecification.withBookOwnerId(user.getId())
+                        .and(BookTransactionHistorySpecification.isReturned(true))
+        );
+
+        return bookTransactionHistoryRepository.findAll(
+                specification,
                 PageRequest.of(page, size)
         );
     }
