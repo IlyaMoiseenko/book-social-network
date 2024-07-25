@@ -4,14 +4,18 @@ import by.moiseenko.book.domain.Book;
 import by.moiseenko.book.domain.User;
 import by.moiseenko.book.dto.request.BookRequest;
 import by.moiseenko.book.dto.response.BookResponse;
+import by.moiseenko.book.dto.response.PageResponse;
 import by.moiseenko.book.mapper.BookMapper;
 import by.moiseenko.book.service.BookService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/books")
@@ -36,6 +40,31 @@ public class BookController {
 
         return ResponseEntity.ok(
             bookMapper.toBookResponse(book)
+        );
+    }
+
+    @GetMapping
+    public ResponseEntity<PageResponse<BookResponse>> getAllDisplayableBooks(
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10") int size,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        Page<Book> books = bookService.findAllBooks(page, size, user);
+        List<BookResponse> listOfBookResponse = books.stream()
+                .map(bookMapper::toBookResponse)
+                .toList();
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        listOfBookResponse,
+                        books.getNumber(),
+                        books.getSize(),
+                        books.getTotalElements(),
+                        books.getTotalPages(),
+                        books.isFirst(),
+                        books.isLast()
+                )
         );
     }
 }

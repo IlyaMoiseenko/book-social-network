@@ -6,6 +6,8 @@ import by.moiseenko.book.mapper.BookMapper;
 import by.moiseenko.book.repository.BookRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,5 +26,12 @@ public class BookService {
     public Book findById(Long id) {
         return bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No book found with id: " + id));
+    }
+
+    public Page<Book> findAllBooks(int page, int size, User user) {
+        return bookRepository.findAllDisplayableBooks(
+                PageRequest.of(page, size),
+                user.getId()
+        );
     }
 }
