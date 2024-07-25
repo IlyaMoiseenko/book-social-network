@@ -67,4 +67,29 @@ public class BookController {
                 )
         );
     }
+
+    @GetMapping("/owner")
+    public ResponseEntity<PageResponse<BookResponse>> getAllBooksByOwner(
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "10") int size,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        Page<Book> books = bookService.findAllByOwner(page, size, user);
+        List<BookResponse> listOfBookResponse = books.stream()
+                .map(bookMapper::toBookResponse)
+                .toList();
+
+        return ResponseEntity.ok(
+                new PageResponse<>(
+                        listOfBookResponse,
+                        books.getNumber(),
+                        books.getSize(),
+                        books.getTotalElements(),
+                        books.getTotalPages(),
+                        books.isFirst(),
+                        books.isLast()
+                )
+        );
+    }
 }

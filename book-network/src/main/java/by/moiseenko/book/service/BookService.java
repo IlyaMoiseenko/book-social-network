@@ -4,6 +4,7 @@ import by.moiseenko.book.domain.Book;
 import by.moiseenko.book.domain.User;
 import by.moiseenko.book.mapper.BookMapper;
 import by.moiseenko.book.repository.BookRepository;
+import by.moiseenko.book.specification.BookSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,13 @@ public class BookService {
         return bookRepository.findAllDisplayableBooks(
                 PageRequest.of(page, size),
                 user.getId()
+        );
+    }
+
+    public Page<Book> findAllByOwner(int page, int size, User user) {
+        return bookRepository.findAll(
+                BookSpecification.withOwnerId(user.getId()),
+                PageRequest.of(page, size)
         );
     }
 }
