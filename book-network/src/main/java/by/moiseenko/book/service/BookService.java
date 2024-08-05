@@ -3,6 +3,7 @@ package by.moiseenko.book.service;
 import by.moiseenko.book.domain.Book;
 import by.moiseenko.book.domain.BookTransactionHistory;
 import by.moiseenko.book.domain.User;
+import by.moiseenko.book.exception.OperationNotPermittedException;
 import by.moiseenko.book.mapper.BookMapper;
 import by.moiseenko.book.repository.BookRepository;
 import by.moiseenko.book.repository.BookTransactionHistoryRepository;
@@ -14,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -65,5 +68,18 @@ public class BookService {
                 specification,
                 PageRequest.of(page, size)
         );
+    }
+
+    public Long updateShareableStatus(Long bookId, User user) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("No book found with id: " + bookId));
+
+        if (!Objects.equals(book.getOwner().getId(), user.getId())) {
+            throw new OperationNotPermittedException("You can not update book shareable status");
+        }
+
+        book.setSharable(!book.isSharable());
+
+        return bookRepository.save(book).getId();
     }
 }
