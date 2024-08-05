@@ -164,4 +164,14 @@ public class BookController {
 
         return ResponseEntity.ok(bookService.updateArchivedStatus(id, user));
     }
+
+    @PostMapping("/borrow/{book-id}")
+    public ResponseEntity<Long> borrowBook(
+            @PathVariable(name = "book-id") Long id,
+            Authentication authentication)
+    {
+        User user = (User) authentication.getPrincipal();
+
+        return ResponseEntity.ok(bookService.borrowBook(id, user));
+    }
 }
