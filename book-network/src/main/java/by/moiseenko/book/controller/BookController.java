@@ -175,7 +175,7 @@ public class BookController {
         return ResponseEntity.ok(bookService.borrowBook(id, user));
     }
 
-    @PostMapping("/borrow/return/{book-id}")
+    @PatchMapping("/borrow/return/{book-id}")
     public ResponseEntity<Long> returnBook(
             @PathVariable(name = "book-id") Long id,
             Authentication authentication)
@@ -183,5 +183,15 @@ public class BookController {
         User user = (User) authentication.getPrincipal();
 
         return ResponseEntity.ok(bookService.returnBorrowBook(id, user));
+    }
+
+    @PatchMapping("/borrow/return/approve/{book-id}")
+    public ResponseEntity<Long> approveRetunBorrowBook(
+        @PathVariable(name = "book-id") Long id,
+        Authentication authentication)
+    {
+        User user = (User) authentication.getPrincipal();
+
+        return ResponseEntity.ok(bookService.approveReturnBorrowBook(id, user));
     }
 }

@@ -40,4 +40,18 @@ public interface BookTransactionHistoryRepository extends JpaRepository<BookTran
             AND transaction.returnedApproved = false
             """)
     Optional<BookTransactionHistory> findByBookIdAndUserId(@Param("bookId") Long bookId, @Param("userId") Long userId);
+
+    /*
+    If nothing is returned, it means
+    that the book has not returned
+    */
+    @Query("""
+            SELECT transaction
+            FROM BookTransactionHistory transaction
+            WHERE transaction.book.owner.id = :ownerId
+            AND transaction.book.id = :bookId
+            AND transaction.returned = true
+            AND transaction.returnedApproved = false
+            """)
+    Optional<BookTransactionHistory> findByBookIdAndOwnerId(@Param("bookId") Long bookId, @Param("ownerId") Long ownerId);
 }
