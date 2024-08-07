@@ -4,6 +4,7 @@ import by.moiseenko.book.domain.Book;
 import by.moiseenko.book.domain.BookTransactionHistory;
 import by.moiseenko.book.domain.User;
 import by.moiseenko.book.exception.OperationNotPermittedException;
+import by.moiseenko.book.file.FileStorageService;
 import by.moiseenko.book.mapper.BookMapper;
 import by.moiseenko.book.repository.BookRepository;
 import by.moiseenko.book.repository.BookTransactionHistoryRepository;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
 
@@ -23,6 +25,7 @@ import java.util.Objects;
 public class BookService {
 
     private final BookMapper mapper;
+    private final FileStorageService fileStorageService;
     private final BookRepository bookRepository;
     private final BookTransactionHistoryRepository bookTransactionHistoryRepository;
 
@@ -169,5 +172,14 @@ public class BookService {
         transaction.setReturnedApproved(true);
 
         return bookTransactionHistoryRepository.save(transaction).getId();
+    }
+
+    public void uploadBookCoverPicture(MultipartFile file, User user, Long bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("No book found with id: " + bookId));
+
+        String bookCover = fileStorageService.saveFile(file, book, user.getId());
+        book.setBookCover(bookCover);
+        bookRepository.save(book);
     }
 }

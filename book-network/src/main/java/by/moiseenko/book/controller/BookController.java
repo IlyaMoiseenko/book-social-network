@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -193,5 +194,18 @@ public class BookController {
         User user = (User) authentication.getPrincipal();
 
         return ResponseEntity.ok(bookService.approveReturnBorrowBook(id, user));
+    }
+
+    @PostMapping(value = "/cover/{book-id}", consumes = "multipart/form-data")
+    public ResponseEntity<?> uploadBookCoverPicture(
+            @PathVariable(name = "book-id") Long id,
+            @RequestPart("file") MultipartFile file,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+
+        bookService.uploadBookCoverPicture(file, user, id);
+
+        return ResponseEntity.accepted().build();
     }
 }
