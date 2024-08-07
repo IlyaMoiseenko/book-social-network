@@ -5,6 +5,7 @@ import by.moiseenko.book.domain.BookTransactionHistory;
 import by.moiseenko.book.dto.request.BookRequest;
 import by.moiseenko.book.dto.response.BookResponse;
 import by.moiseenko.book.dto.response.BorrowedBookResponse;
+import by.moiseenko.book.file.FileUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -34,6 +35,7 @@ public class BookMapper {
                 .rate(from.getRate())
                 .archived(from.isArchive())
                 .shareable(from.isSharable())
+                .cover(FileUtils.readFileFromLocation(from.getBookCover()))
                 .build();
     }
 
