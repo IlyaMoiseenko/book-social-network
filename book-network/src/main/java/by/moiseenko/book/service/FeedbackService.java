@@ -8,6 +8,8 @@ import by.moiseenko.book.repository.BookRepository;
 import by.moiseenko.book.repository.FeedbackRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -31,5 +33,13 @@ public class FeedbackService {
             throw new OperationNotPermittedException("You cannot give a feedback to your own book");
 
         return feedbackRepository.save(feedback).getId();
+    }
+
+    public Page<Feedback> findAllByBook(Long bookId, int page, int size) {
+
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("No book found with id" + bookId));
+
+        return feedbackRepository.findAllByBook(book, PageRequest.of(page, size));
     }
 }
